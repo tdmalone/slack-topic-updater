@@ -1,0 +1,16 @@
+{
+  "name": "slack-topic-updater",
+  "version": "0.0.1",
+  "description": "Updates a Slack channel's topic, hiding the 'topic update' notice.",
+  "homepage": "https://github.com/tdmalone/slack-topic-updater#readme",
+  "repository": "git+https://github.com/tdmalone/slack-topic-updater.git",
+  "main": "index.js",
+  "author": "Tim Malone <tdmalone@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "slack"
+  ],
+  "dependencies": {
+    "@slack/client": "^4.6.0"
+  }
+}
