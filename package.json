@@ -8,8 +8,10 @@
   "author": "Tim Malone <tdmalone@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "lint": "DEBUG=eslint:cli-engine eslint --color --ignore-pattern '!.*.js' \"**/*.js\"",
-    "fix": "yarn lint --fix"
+    "lint": "DEBUG=eslint:cli-engine eslint --color --ignore-pattern '/coverage/' --ignore-pattern '!.*.js' \"**/*.js\"",
+    "fix": "yarn lint --fix",
+    "test": "jest --forceExit --runInBand",
+    "report-coverage": "coveralls"
   },
   "keywords": [
     "slack"
@@ -18,7 +20,9 @@
     "@slack/client": "^4.6.0"
   },
   "devDependencies": {
+    "coveralls": "^3.0.2",
     "eslint": "^5.6.1",
-    "eslint-config-tdmalone": "^0.1.3"
+    "eslint-config-tdmalone": "^0.1.3",
+    "jest": "^23.6.0"
   }
 }
