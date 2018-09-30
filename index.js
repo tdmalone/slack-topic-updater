@@ -18,6 +18,7 @@ const slackClient = require( '@slack/client' );
  *                         to set. The token needs the following scopes: channels:write (to set the
  *                         topic); channels:history (to search for the topic update message); and
  *                         chat:write:user (to delete the topic update message) scopes.
+ * @returns {Promise} A chain of promises to complete the three Slack API actions required.
  */
 const update = ( options ) => {
 
