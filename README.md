@@ -42,6 +42,12 @@ Once you've added the scopes, follow the instructions under _Settings: Install A
 
 (Note that bot user tokens are not supported by the [`channels.setTopic`](https://api.slack.com/methods/channels.setTopic) endpoint, so they can't be used here - you must use a user token).
 
+## TODO
+
+* Only delete topic message if it was sent on behalf of the authed user
+* Error handling?
+* Add tests
+
 ## Problems?
 
 Please feel free to [log an issue](https://github.com/tdmalone/slack-topic-updater/issues/new), or - if you can solve a problem yourself - pull requests will be gladly accepted.
