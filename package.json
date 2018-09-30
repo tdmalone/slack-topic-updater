@@ -11,7 +11,7 @@
     "lint": "DEBUG=eslint:cli-engine eslint --color --ignore-pattern '/coverage/' --ignore-pattern '!.*.js' \"**/*.js\"",
     "fix": "yarn lint --fix",
     "test": "jest --coverage",
-    "report-coverage": "coveralls"
+    "report-coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "jest": {
     "clearMocks": true
