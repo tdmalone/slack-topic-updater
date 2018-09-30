@@ -10,8 +10,11 @@
   "scripts": {
     "lint": "DEBUG=eslint:cli-engine eslint --color --ignore-pattern '/coverage/' --ignore-pattern '!.*.js' \"**/*.js\"",
     "fix": "yarn lint --fix",
-    "test": "jest --forceExit --runInBand",
+    "test": "jest --coverage",
     "report-coverage": "coveralls"
+  },
+  "jest": {
+    "clearMocks": true
   },
   "keywords": [
     "slack"

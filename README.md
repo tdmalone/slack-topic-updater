@@ -18,7 +18,7 @@ Or if you use [Yarn](https://yarnpkg.com/):
 
     yarn add slack-topic-updater
 
-Then call like this:
+Then, call like this:
 
     const slackTopicUpdater = require('slack-topic-updater');
 
@@ -41,6 +41,14 @@ To get your Slack token, create an app from [api.slack.com/apps](https://api.sla
 Once you've added the scopes, follow the instructions under _Settings: Install App_. You should be provided with an _OAuth Access Token_, which is what you'll need to send through to this module.
 
 (Note that bot user tokens are not supported by the [`channels.setTopic`](https://api.slack.com/methods/channels.setTopic) endpoint, so they can't be used here - you must use a user token).
+
+## Running Tests
+
+    npm test
+
+or
+
+    yarn test
 
 ## TODO
 
