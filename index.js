@@ -7,7 +7,9 @@
  * @author Tim Malone <tdmalone@gmail.com>
  */
 
-const slackClient = require('@slack/client');
+'use strict';
+
+const slackClient = require( '@slack/client' );
 
 /**
  * Updates the channel's topic.
@@ -29,14 +31,17 @@ const update = ( options ) => {
 
   // Get the recent message history.
   const getHistory = setTopic.then( () => {
-    return slack.channels.history({ channel: options.channel })
+    return slack.channels.history({ channel: options.channel });
   });
 
   // Delete the latest topic update message.
   const deleteUpdateMessage = getHistory.then( ( data ) => {
     for ( const message of data.messages ) {
       if ( ! message.subtype || 'channel_topic' !== message.subtype ) continue;
-      return slack.chat.delete({ ts: message.ts, channel: options.channel });
+      return slack.chat.delete({
+        ts: message.ts,
+        channel: options.channel
+      });
     }
   });
 
