@@ -21,13 +21,13 @@ const mockSlackClient = {
 
 };
 
-describe( 'update()', () => {
+const validOptions = {
+  token: 'xoxp-test',
+  channel: 'C12345678',
+  topic: 'Test topic'
+};
 
-  const validOptions = {
-    token: 'xoxp-test',
-    channel: 'C12345678',
-    topic: 'Test topic'
-  };
+describe( 'updateSingleChannel()', () => {
 
   it( 'sets the provided topic text in the provided channel', async() => {
     expect.hasAssertions();
@@ -37,7 +37,7 @@ describe( 'update()', () => {
       topic: validOptions.topic
     };
 
-    await index.update( validOptions, mockSlackClient );
+    await index.updateSingleChannel( validOptions, mockSlackClient );
 
     expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledTimes( 1 );
     expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledWith( expectedOptions );
@@ -50,7 +50,7 @@ describe( 'update()', () => {
       channel: validOptions.channel
     };
 
-    await index.update( validOptions, mockSlackClient );
+    await index.updateSingleChannel( validOptions, mockSlackClient );
 
     expect( mockSlackClient.channels.history ).toHaveBeenCalledTimes( 1 );
     expect( mockSlackClient.channels.history ).toHaveBeenCalledWith( expectedOptions );
@@ -93,10 +93,119 @@ describe( 'update()', () => {
       channel: validOptions.channel
     };
 
-    await index.update( validOptions, mockSlackClient );
+    await index.updateSingleChannel( validOptions, mockSlackClient );
 
     expect( mockSlackClient.chat.delete ).toHaveBeenCalledTimes( 1 );
     expect( mockSlackClient.chat.delete ).toHaveBeenCalledWith( expectedOptions );
+  });
+
+  it.skip( 'returns a promise', async() => {
+    expect.hasAssertions();
+  });
+
+}); // UpdateSingleChannel().
+
+describe( 'update()', () => {
+
+  it( 'throws if no options are provided', () => {
+    expect( () => {
+      index.update();
+    }).toThrow();
+  });
+
+  it( 'throws if \'token\' is not provided or is blank', () => {
+
+    expect( () => {
+      index.update({
+        channel: validOptions.channel,
+        topic: validOptions.topic
+      });
+    }).toThrow();
+
+    expect( () => {
+      index.update({
+        token: '',
+        channel: validOptions.channel,
+        topic: validOptions.topic
+      });
+    }).toThrow();
+
+  });
+
+  it( 'throws if \'topic\' is not provided', () => {
+
+    expect( () => {
+      index.update({
+        token: validOptions.token,
+        channel: validOptions.channel
+      });
+    }).toThrow();
+
+  });
+
+  it( 'does NOT throw on a blank \'topic\'', () => {
+
+    expect( () => {
+      index.update({
+        token: validOptions.token,
+        channel: validOptions.channel,
+        topic: ''
+      });
+    }).not.toThrow();
+
+  });
+
+  it( 'throws if both \'channel\' and \'channels\' are not provided', () => {
+
+    expect( () => {
+      index.update({
+        token: validOptions.token,
+        topic: validOptions.topic
+      });
+    }).toThrow();
+
+  });
+
+  it( 'calls updateSingleChannel() for each \'channels\' provided', async() => {
+    expect.hasAssertions();
+    index.updateSingleChannel = jest.fn();
+
+    const options = {
+      token: validOptions.token,
+      channels: [
+        'C12345678',
+        'C98765432'
+      ],
+      topic: validOptions.topic
+    };
+
+    await index.update( options, mockSlackClient );
+
+    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledTimes( options.channels.length );
+
+    for ( let iterator = 1; iterator <= options.channels.length; iterator++ ) {
+
+      const singleOptions = {
+        channel: options.channels[iterator - 1],
+        topic: options.topic
+      };
+
+      expect( mockSlackClient.channels.setTopic )
+        .toHaveBeenNthCalledWith( iterator, singleOptions );
+
+    }
+  });
+
+  it.skip( 'calls updateSingleChannel() once if a single \'channel\' is provided', async() => {
+    expect.hasAssertions();
+  });
+
+  it.skip( 'uses \'channels\' rather than \'channel\' if both are provided', async() => {
+    expect.hasAssertions();
+  });
+
+  it.skip( 'returns a promise', async() => {
+    expect.hasAssertions();
   });
 
 }); // Update().

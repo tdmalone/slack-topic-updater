@@ -6,7 +6,9 @@ Updates a Slack channel's topic, then 'hides' the topic update notice by deletin
 
 Updating a Slack channel topic is pretty simple. But, it leaves a message behind saying the topic has been updated. If you want to automate topic updates - for example, to use them as a 'ticker' of sorts - this can result in a lot of useless noise.
 
-So, this module abstracts into one line the process of updating a topic, querying the latest messages, and deleting the topic update message.
+So, this module abstracts into one line the process of checking the current topic, querying the latest channel messages, and then deleting the topic update message. All this happens quite quickly, so no-one will notice the topic update message appearing unless they're watching quite intently!
+
+As a bonus, the same topic text can be sent to multiple channels at the same time.
 
 ## Usage
 
@@ -29,6 +31,17 @@ Then, call like this:
     });
 
 The response from Slack will be passed straight back through to you. In practice, this means that if `response.ok` is `true`, the actions have successfully completed.
+
+Alternatively, you can instead pass an array of channel IDs as `channels`. If you do this, you'll also receive an array of Slack responses back - one for each channel.
+
+    const response = await slackTopicUpdater.update({
+      token: 'xoxp-0000000000-000000000000-000000000000-00000000000000000000000000000000',
+      channels: [
+        'C12345678',
+        'C98765432'
+      ],
+      topic: 'This topic was last updated at ' + Date.now()
+    });
 
 ## Authorisation
 
