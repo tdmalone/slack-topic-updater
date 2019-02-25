@@ -69,6 +69,7 @@ or
 * Only delete topic message if it was sent on behalf of the authed user
 * Delete more than just the most recent topic message - in case multiple invocations have happened at once
 * Add better error handling?
+* Complete in-progress (skipped) tests
 
 ## Problems?
 
