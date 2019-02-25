@@ -8,11 +8,38 @@
 
 const index = require( './index' );
 
+const sampleMessages = [
+  {
+    ts: 0,
+    text: 'Message with no subtype'
+  },
+  {
+    ts: 1,
+    text: 'Message with non channel_topic subtype',
+    subtype: 'something_random'
+  },
+  {
+    ts: 2,
+    text: 'First (latest) message with channel_topic subtype',
+    subtype: 'channel_topic'
+  },
+  {
+    ts: 3,
+    text: 'Second (older) message with channel_topic subtype',
+    subtype: 'channel_topic'
+  }
+];
+
+const sampleMessagesWithChannelTopic = [
+  sampleMessages[2],
+  sampleMessages[3]
+];
+
 const mockSlackClient = {
 
   channels: {
     setTopic: jest.fn().mockResolvedValue(),
-    history: jest.fn().mockResolvedValue({ messages: [] })
+    history: jest.fn().mockResolvedValue({ messages: sampleMessages })
   },
 
   chat: {
@@ -73,30 +100,6 @@ describe( 'updateSingleChannel()', () => {
     // - does not delete messages without a subtype
 
     const CHANNEL_TOPIC_MESSAGE_COUNT = 2;
-
-    const sampleMessages = [
-      {
-        ts: 0,
-        text: 'Message with no subtype'
-      },
-      {
-        ts: 1,
-        text: 'Message with non channel_topic subtype',
-        subtype: 'something_random'
-      },
-      {
-        ts: 2,
-        text: 'First (latest) message with channel_topic subtype',
-        subtype: 'channel_topic'
-      },
-      {
-        ts: 3,
-        text: 'Second (older) message with channel_topic subtype',
-        subtype: 'channel_topic'
-      }
-    ];
-
-    mockSlackClient.channels.history = jest.fn().mockResolvedValue({ messages: sampleMessages });
 
     const expectedOptions = {
       ts: sampleMessages[2].ts,
@@ -183,15 +186,15 @@ describe( 'update()', () => {
     expect( mockSlackClient.channels.setTopic )
       .toHaveBeenCalledTimes( multiChannelOptions.channels.length );
 
-    for ( let iterator = 1; iterator <= multiChannelOptions.channels.length; iterator++ ) {
+    for ( let iterator = 0; iterator < multiChannelOptions.channels.length; iterator++ ) {
 
       const singleOptions = {
-        channel: multiChannelOptions.channels[iterator - 1],
+        channel: multiChannelOptions.channels[iterator],
         topic: multiChannelOptions.topic
       };
 
       expect( mockSlackClient.channels.setTopic )
-        .toHaveBeenNthCalledWith( iterator, singleOptions );
+        .toHaveBeenNthCalledWith( iterator + 1, singleOptions );
 
     }
   });
@@ -203,15 +206,37 @@ describe( 'update()', () => {
     expect( mockSlackClient.channels.history )
       .toHaveBeenCalledTimes( multiChannelOptions.channels.length );
 
-    for ( let iterator = 1; iterator <= multiChannelOptions.channels.length; iterator++ ) {
+    for ( let iterator = 0; iterator < multiChannelOptions.channels.length; iterator++ ) {
 
       const singleOptions = {
-        channel: multiChannelOptions.channels[iterator - 1]
+        channel: multiChannelOptions.channels[iterator]
       };
 
       expect( mockSlackClient.channels.history )
-        .toHaveBeenNthCalledWith( iterator, singleOptions );
+        .toHaveBeenNthCalledWith( iterator + 1, singleOptions );
 
+    }
+  });
+
+  it( 'calls chat.delete() with correct options for each \'channels\'', async() => {
+    expect.hasAssertions();
+    await index.update( multiChannelOptions, mockSlackClient );
+
+    const deleteCount = multiChannelOptions.channels.length * sampleMessagesWithChannelTopic.length;
+    expect( mockSlackClient.chat.delete ).toHaveBeenCalledTimes( deleteCount );
+
+    for ( let iterator1 = 0; iterator1 < multiChannelOptions.channels.length; iterator1++ ) {
+      for ( let iterator2 = 0; iterator2 < sampleMessagesWithChannelTopic.length; iterator2++ ) {
+
+        const singleOptions = {
+          channel: multiChannelOptions.channels[iterator1],
+          ts: sampleMessagesWithChannelTopic[iterator2].ts
+        };
+
+        expect( mockSlackClient.chat.delete )
+          .toHaveBeenCalledWith( singleOptions );
+
+      }
     }
   });
 
