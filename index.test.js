@@ -56,11 +56,10 @@ describe( 'updateSingleChannel()', () => {
     expect( mockSlackClient.channels.history ).toHaveBeenCalledWith( expectedOptions );
   });
 
-  it( 'deletes the latest topic update message only', async() => {
+  it( 'deletes all topic update messages', async() => {
     expect.hasAssertions();
 
     // This test also implicitly tests:
-    // - does not delete additional topic update messages
     // - does not delete a non-channel topic 'subtyped' message
     // - does not delete messages without a subtype
 
@@ -95,7 +94,7 @@ describe( 'updateSingleChannel()', () => {
 
     await index.updateSingleChannel( validOptions, mockSlackClient );
 
-    expect( mockSlackClient.chat.delete ).toHaveBeenCalledTimes( 1 );
+    expect( mockSlackClient.chat.delete ).toHaveBeenCalledTimes( 2 );
     expect( mockSlackClient.chat.delete ).toHaveBeenCalledWith( expectedOptions );
   });
 

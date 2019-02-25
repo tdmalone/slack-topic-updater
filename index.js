@@ -35,17 +35,25 @@ const updateSingleChannel = ( options, slack ) => {
   });
 
   // Delete the latest topic update message.
-  const deleteUpdateMessage = getHistory.then( ( data ) => {
+  const deleteUpdateMessages = [];
+  getHistory.then( ( data ) => {
     for ( const message of data.messages ) {
-      if ( ! message.subtype || 'channel_topic' !== message.subtype ) continue;
-      return slack.chat.delete({
-        ts: message.ts,
-        channel: options.channel
-      });
+
+      if ( ! message.subtype || 'channel_topic' !== message.subtype ) {
+        continue;
+      }
+
+      deleteUpdateMessages.push(
+        slack.chat.delete({
+          ts: message.ts,
+          channel: options.channel
+        })
+      );
+
     }
   });
 
-  return deleteUpdateMessage;
+  return Promise.all([ setTopic, getHistory, deleteUpdateMessages ]);
 
 }; // UpdateSingleChannel.
 
