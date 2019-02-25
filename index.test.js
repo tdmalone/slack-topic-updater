@@ -61,7 +61,7 @@ describe( 'updateSingleChannel()', () => {
 
     // This test also implicitly tests:
     // - does not delete additional topic update messages
-    // - does not delete a non-channel topic subtype'd message
+    // - does not delete a non-channel topic 'subtyped' message
     // - does not delete messages without a subtype
 
     const sampleMessages = [

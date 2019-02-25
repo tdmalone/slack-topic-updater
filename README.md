@@ -65,13 +65,14 @@ or
 
 ## TODO
 
+* Only update topic message if it's different to the one currently there
 * Only delete topic message if it was sent on behalf of the authed user
-* Error handling?
-* Add tests
+* Delete more than just the most recent topic message - in case multiple invocations have happened at once
+* Add better error handling?
 
 ## Problems?
 
-Please feel free to [log an issue](https://github.com/tdmalone/slack-topic-updater/issues/new), or - if you can solve a problem yourself - pull requests will be gladly accepted.
+Please feel free to [log an issue](https://github.com/tdmalone/slack-topic-updater/issues/new), or - if you can solve a problem yourself - pull requests will be gladly accepted. If you add new functionality, please add tests to cover it.
 
 ## License
 
