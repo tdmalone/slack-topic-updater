@@ -95,21 +95,25 @@ describe( 'updateSingleChannel()', () => {
   it( 'deletes all topic update messages', async() => {
     expect.hasAssertions();
 
-    // This test also implicitly tests:
+    // Providing the content of sampleMessages allows, this test also implicitly tests:
     // - does not delete a non-channel topic 'subtyped' message
     // - does not delete messages without a subtype
 
-    const CHANNEL_TOPIC_MESSAGE_COUNT = 2;
-
-    const expectedOptions = {
-      ts: sampleMessages[2].ts,
-      channel: singleChannelOptions.channel
-    };
-
     await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
 
-    expect( mockSlackClient.chat.delete ).toHaveBeenCalledTimes( CHANNEL_TOPIC_MESSAGE_COUNT );
-    expect( mockSlackClient.chat.delete ).toHaveBeenCalledWith( expectedOptions );
+    expect( mockSlackClient.chat.delete )
+      .toHaveBeenCalledTimes( sampleMessagesWithChannelTopic.length );
+
+    for ( let iterator = 0; iterator < sampleMessagesWithChannelTopic.length; iterator++ ) {
+
+      const singleOptions = {
+        channel: singleChannelOptions.channel,
+        ts: sampleMessagesWithChannelTopic[iterator].ts
+      };
+
+      expect( mockSlackClient.chat.delete ).toHaveBeenNthCalledWith( iterator + 1, singleOptions );
+
+    }
   });
 
   it.skip( 'returns a promise', async() => {
