@@ -65,11 +65,7 @@ or
 
 ## TODO
 
-* Only update topic message if it's different to the one currently there
-* Only delete topic message if it was sent on behalf of the authenticated user
-* Add better error handling, especially when encountering the 'message_not_found' error on topic update message deletion
 * Complete in-progress (skipped) tests
-* Support for private channels (aka groups)
 * Better errors if multiple channels (or really, a non-string) are provided in the 'channel' attribute
 
 ## Problems?
