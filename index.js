@@ -14,24 +14,27 @@ const slackClient = require( '@slack/client' );
 /**
  * Updates a single channel's topic.
  *
- * @param {object} options An object containing a Slack 'token', the 'channel' ID, and the 'topic'
- *                         to set. The token needs the following scopes: channels:write (to set the
- *                         topic); channels:history (to search for the topic update message); and
- *                         chat:write:user (to delete the topic update message) scopes.
+ * @param {object} options An object containing the 'channel' ID, and the 'topic' to set.
  * @param {object} slack   An authenticated instance of a Slack Web API client.
  * @returns {Promise} A chain of promises to complete the three Slack API actions required.
  */
 const updateSingleChannel = ( options, slack ) => {
 
+  // Get these options out of the object so we don't use newer versions of the object when dealing
+  // with multiple channels.
+  // TODO: Enhance existing test, or add a test, to cover this situation.
+  const topic = options.topic,
+        channel = options.channel;
+
   // Set the topic.
   const setTopic = slack.channels.setTopic({
-    channel: options.channel,
-    topic: options.topic
+    channel,
+    topic
   });
 
   // Get the recent message history.
   const getHistory = setTopic.then( () => {
-    return slack.channels.history({ channel: options.channel });
+    return slack.channels.history({ channel });
   });
 
   // Delete the latest topic update message.
@@ -46,7 +49,7 @@ const updateSingleChannel = ( options, slack ) => {
       deleteUpdateMessages.push(
         slack.chat.delete({
           ts: message.ts,
-          channel: options.channel
+          channel
         })
       );
 
