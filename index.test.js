@@ -63,6 +63,8 @@ describe( 'updateSingleChannel()', () => {
     // - does not delete a non-channel topic 'subtyped' message
     // - does not delete messages without a subtype
 
+    const CHANNEL_TOPIC_MESSAGE_COUNT = 2;
+
     const sampleMessages = [
       {
         ts: 0,
@@ -94,7 +96,7 @@ describe( 'updateSingleChannel()', () => {
 
     await index.updateSingleChannel( validOptions, mockSlackClient );
 
-    expect( mockSlackClient.chat.delete ).toHaveBeenCalledTimes( 2 );
+    expect( mockSlackClient.chat.delete ).toHaveBeenCalledTimes( CHANNEL_TOPIC_MESSAGE_COUNT );
     expect( mockSlackClient.chat.delete ).toHaveBeenCalledWith( expectedOptions );
   });
 
