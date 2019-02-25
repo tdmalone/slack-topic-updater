@@ -22,7 +22,6 @@ const updateSingleChannel = ( options, slack ) => {
 
   // Get these options out of the object so we don't use newer versions of the object when dealing
   // with multiple channels.
-  // TODO: Enhance existing test, or add a test, to cover this situation.
   const topic = options.topic,
         channel = options.channel;
 

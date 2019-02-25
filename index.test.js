@@ -21,10 +21,19 @@ const mockSlackClient = {
 
 };
 
-const validOptions = {
+const singleChannelOptions = {
   token: 'xoxp-test',
   channel: 'C12345678',
   topic: 'Test topic'
+};
+
+const multiChannelOptions = {
+  token: singleChannelOptions.token,
+  channels: [
+    'C12345678',
+    'C98765432'
+  ],
+  topic: singleChannelOptions.topic
 };
 
 describe( 'updateSingleChannel()', () => {
@@ -33,11 +42,11 @@ describe( 'updateSingleChannel()', () => {
     expect.hasAssertions();
 
     const expectedOptions = {
-      channel: validOptions.channel,
-      topic: validOptions.topic
+      channel: singleChannelOptions.channel,
+      topic: singleChannelOptions.topic
     };
 
-    await index.updateSingleChannel( validOptions, mockSlackClient );
+    await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
 
     expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledTimes( 1 );
     expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledWith( expectedOptions );
@@ -47,10 +56,10 @@ describe( 'updateSingleChannel()', () => {
     expect.hasAssertions();
 
     const expectedOptions = {
-      channel: validOptions.channel
+      channel: singleChannelOptions.channel
     };
 
-    await index.updateSingleChannel( validOptions, mockSlackClient );
+    await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
 
     expect( mockSlackClient.channels.history ).toHaveBeenCalledTimes( 1 );
     expect( mockSlackClient.channels.history ).toHaveBeenCalledWith( expectedOptions );
@@ -91,10 +100,10 @@ describe( 'updateSingleChannel()', () => {
 
     const expectedOptions = {
       ts: sampleMessages[2].ts,
-      channel: validOptions.channel
+      channel: singleChannelOptions.channel
     };
 
-    await index.updateSingleChannel( validOptions, mockSlackClient );
+    await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
 
     expect( mockSlackClient.chat.delete ).toHaveBeenCalledTimes( CHANNEL_TOPIC_MESSAGE_COUNT );
     expect( mockSlackClient.chat.delete ).toHaveBeenCalledWith( expectedOptions );
@@ -118,16 +127,16 @@ describe( 'update()', () => {
 
     expect( () => {
       index.update({
-        channel: validOptions.channel,
-        topic: validOptions.topic
+        channel: singleChannelOptions.channel,
+        topic: singleChannelOptions.topic
       });
     }).toThrow();
 
     expect( () => {
       index.update({
         token: '',
-        channel: validOptions.channel,
-        topic: validOptions.topic
+        channel: singleChannelOptions.channel,
+        topic: singleChannelOptions.topic
       });
     }).toThrow();
 
@@ -137,8 +146,8 @@ describe( 'update()', () => {
 
     expect( () => {
       index.update({
-        token: validOptions.token,
-        channel: validOptions.channel
+        token: singleChannelOptions.token,
+        channel: singleChannelOptions.channel
       });
     }).toThrow();
 
@@ -148,8 +157,8 @@ describe( 'update()', () => {
 
     expect( () => {
       index.update({
-        token: validOptions.token,
-        channel: validOptions.channel,
+        token: singleChannelOptions.token,
+        channel: singleChannelOptions.channel,
         topic: ''
       });
     }).not.toThrow();
@@ -160,38 +169,47 @@ describe( 'update()', () => {
 
     expect( () => {
       index.update({
-        token: validOptions.token,
-        topic: validOptions.topic
+        token: singleChannelOptions.token,
+        topic: singleChannelOptions.topic
       });
     }).toThrow();
 
   });
 
-  it( 'calls updateSingleChannel() for each \'channels\' provided', async() => {
+  it( 'calls channels.setTopic() with correct options for each \'channels\'', async() => {
     expect.hasAssertions();
-    index.updateSingleChannel = jest.fn();
+    await index.update( multiChannelOptions, mockSlackClient );
 
-    const options = {
-      token: validOptions.token,
-      channels: [
-        'C12345678',
-        'C98765432'
-      ],
-      topic: validOptions.topic
-    };
+    expect( mockSlackClient.channels.setTopic )
+      .toHaveBeenCalledTimes( multiChannelOptions.channels.length );
 
-    await index.update( options, mockSlackClient );
-
-    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledTimes( options.channels.length );
-
-    for ( let iterator = 1; iterator <= options.channels.length; iterator++ ) {
+    for ( let iterator = 1; iterator <= multiChannelOptions.channels.length; iterator++ ) {
 
       const singleOptions = {
-        channel: options.channels[iterator - 1],
-        topic: options.topic
+        channel: multiChannelOptions.channels[iterator - 1],
+        topic: multiChannelOptions.topic
       };
 
       expect( mockSlackClient.channels.setTopic )
+        .toHaveBeenNthCalledWith( iterator, singleOptions );
+
+    }
+  });
+
+  it( 'calls channels.history() with correct options for each \'channels\'', async() => {
+    expect.hasAssertions();
+    await index.update( multiChannelOptions, mockSlackClient );
+
+    expect( mockSlackClient.channels.history )
+      .toHaveBeenCalledTimes( multiChannelOptions.channels.length );
+
+    for ( let iterator = 1; iterator <= multiChannelOptions.channels.length; iterator++ ) {
+
+      const singleOptions = {
+        channel: multiChannelOptions.channels[iterator - 1]
+      };
+
+      expect( mockSlackClient.channels.history )
         .toHaveBeenNthCalledWith( iterator, singleOptions );
 
     }
