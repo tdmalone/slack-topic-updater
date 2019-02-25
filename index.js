@@ -64,7 +64,10 @@ const updateSingleChannel = ( options, slack ) => {
  * Updates the topic of one or more channels.
  *
  * @param {object} options An object containing a Slack 'token', the 'channel' ID, and the 'topic'
- *                         to set, or optionally an array of 'channels'.
+ *                         to set, or optionally an array of 'channels'. The token needs the scopes:
+ *                         channels:write (to set the topic); channels:history (to search for the
+ *                         topic update message); and chat:write:user (to delete the topic update
+ *                         message) scopes.
  * @param {object} client  Pass in an alternative implementation of a Slack client. Mainly useful
  *                         for testing.
  * @returns {Promise} A chain of promises to complete the three Slack API actions required, or if
