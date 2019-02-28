@@ -27,6 +27,16 @@ const sampleMessages = [
     ts: 3,
     text: 'Second message with channel_topic subtype',
     subtype: 'channel_topic'
+  },
+  {
+    ts: 4,
+    text: 'Second message with channel_topic subtype',
+    subtype: 'group_topic'
+  },
+  {
+    ts: 5,
+    text: 'Second message with channel_topic subtype',
+    subtype: 'group_topic'
   }
 ];
 
@@ -36,6 +46,11 @@ const sampleMessageWithAltSubtype = sampleMessages[1];
 const sampleMessagesWithChannelTopic = [
   sampleMessages[2],
   sampleMessages[3]
+];
+
+const sampleMessagesWithGroupTopic = [
+  sampleMessages[4],
+  sampleMessages[5]
 ];
 
 const mockSlackClient = {
@@ -71,6 +86,22 @@ const multiChannelOptions = {
   topic: singleChannelOptions.topic
 };
 
+describe( 'isPrivate()', () => {
+
+  it( 'returns true for a private channel', async() => {
+    expect( index.isPrivate( 'G987654321' ) ).toBe( true );
+  });
+
+  it( 'returns false for an ordinary channel', async() => {
+    expect( index.isPrivate( 'C987654321' ) ).toBe( false );
+  });
+
+  it( 'returns false when given something not resembling a channel ID at all', async() => {
+    expect( index.isPrivate( 'whatever' ) ).toBe( false );
+  });
+
+});
+
 describe( 'updateSingleChannel()', () => {
 
   it( 'sets the provided topic text in the provided channel', async() => {
@@ -98,6 +129,20 @@ describe( 'updateSingleChannel()', () => {
 
     expect( mockSlackClient.channels.history ).toHaveBeenCalledTimes( 1 );
     expect( mockSlackClient.channels.history ).toHaveBeenCalledWith( expectedOptions );
+  });
+
+  it( 'calls private channel endpoints instead, if supplied with a private channel ID', async() => {
+    expect.hasAssertions();
+
+    const options = Object.assign({}, singleChannelOptions );
+    options.channel = 'G12345678';
+
+    await index.updateSingleChannel( options, mockSlackClient );
+
+    expect( mockSlackClient.groups.setTopic ).toHaveBeenCalled();
+    expect( mockSlackClient.groups.history ).toHaveBeenCalled();
+    expect( mockSlackClient.channels.setTopic ).not.toHaveBeenCalled();
+    expect( mockSlackClient.channels.history ).not.toHaveBeenCalled();
   });
 
   it( 'does not delete a message without a \'subtype\'', async() => {
@@ -134,6 +179,29 @@ describe( 'updateSingleChannel()', () => {
       const singleOptions = {
         channel: singleChannelOptions.channel,
         ts: sampleMessagesWithChannelTopic[iterator].ts
+      };
+
+      expect( mockSlackClient.chat.delete ).toHaveBeenNthCalledWith( iterator + 1, singleOptions );
+
+    }
+  });
+
+  it( 'deletes a private channel topic update message', async() => {
+    expect.hasAssertions();
+
+    const options = Object.assign({}, singleChannelOptions );
+    options.channel = 'G12345678';
+
+    await index.updateSingleChannel( options, mockSlackClient );
+
+    expect( mockSlackClient.chat.delete )
+      .toHaveBeenCalledTimes( sampleMessagesWithGroupTopic.length );
+
+    for ( let iterator = 0; iterator < sampleMessagesWithGroupTopic.length; iterator++ ) {
+
+      const singleOptions = {
+        channel: options.channel,
+        ts: sampleMessagesWithGroupTopic[iterator].ts
       };
 
       expect( mockSlackClient.chat.delete ).toHaveBeenNthCalledWith( iterator + 1, singleOptions );
