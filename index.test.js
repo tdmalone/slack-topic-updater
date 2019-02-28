@@ -45,6 +45,11 @@ const mockSlackClient = {
     history: jest.fn().mockResolvedValue({ messages: sampleMessages })
   },
 
+  groups: {
+    setTopic: jest.fn().mockResolvedValue(),
+    history: jest.fn().mockResolvedValue({ messages: sampleMessages })
+  },
+
   chat: {
     delete: jest.fn().mockResolvedValue()
   }

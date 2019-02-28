@@ -12,6 +12,22 @@
 const slackClient = require( '@slack/client' );
 
 /**
+ * Determines whether or not a provided channel ID refers to a private channel. This usually informs
+ * informs the particular API endpoints that need to be called when operating on the channel.
+ *
+ * NOTE: This function does not validate any other aspect of a channel ID. It is entirely possible
+ *       to send a channel ID that is for all intents and purposes *invalid*, but still receive
+ *       Boolean true back from this function.
+ *
+ * @param {string} channelId The ID of the channel. Usually looks like C12345678 for public
+ *                           channels or G12345678 for private channels.
+ * @returns {boolean} Whether the supplied channel ID refers to a private channel or not.
+ */
+const isPrivate = ( channelId ) => {
+  return 'G' === channelId.substring( 0, 1 );
+};
+
+/**
  * Updates a single channel's topic.
  *
  * @param {object} options An object containing the 'channel' ID, and the 'topic' to set.
@@ -25,15 +41,19 @@ const updateSingleChannel = ( options, slack ) => {
   const topic = options.topic,
         channel = options.channel;
 
+  const setTopicEndpoint = isPrivate( channel ) ? slack.groups.setTopic : slack.channels.setTopic,
+        historyEndpoint = isPrivate( channel ) ? slack.groups.history : slack.channels.history,
+        requiredMessageSubtype = isPrivate( channel ) ? 'group_topic' : 'channel_topic';
+
   // Set the topic.
-  const setTopic = slack.channels.setTopic({
+  const setTopic = setTopicEndpoint({
     channel,
     topic
   });
 
   // Get the recent message history.
   const getHistory = setTopic.then( () => {
-    return slack.channels.history({ channel });
+    return historyEndpoint({ channel });
   });
 
   // Delete the latest topic update message.
@@ -41,7 +61,7 @@ const updateSingleChannel = ( options, slack ) => {
   getHistory.then( ( data ) => {
     for ( const message of data.messages ) {
 
-      if ( ! message.subtype || 'channel_topic' !== message.subtype ) {
+      if ( ! message.subtype || requiredMessageSubtype !== message.subtype ) {
         continue;
       }
 
@@ -118,5 +138,6 @@ const update = ( options, client ) => {
 
 module.exports = {
   update,
-  updateSingleChannel
+  updateSingleChannel,
+  isPrivate
 };

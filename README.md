@@ -48,12 +48,14 @@ Alternatively, you can instead pass an array of channel IDs as `channels`. If yo
 To get your Slack token, create an app from [api.slack.com/apps](https://api.slack.com/apps). After making it to the app management screen, from _Features: OAuth & Permissions_, and then under _Scopes_, you'll need to select:
 
 * `channels:write` (to set the topic);
-* `channels:history` (to search for the topic update message); and
+* `channels:history` (to search for the topic update message);
+* `groups:write` (to set the topic in **private channels**);
+* `groups:history` (to search for the topic update message in **private channels**); and
 * `chat:write:user` (to delete the topic update message).
 
-Once you've added the scopes, follow the instructions under _Settings: Install App_. You should be provided with an _OAuth Access Token_, which is what you'll need to send through to this module.
+NOTE: The private channel scopes are only required if you want to update the topic in private channels. If you'll only be using public channels, you should leave these scopes out. Also note that the app will only be able to access channels that you are in (this applies to *both* public and private channels).
 
-(Note that bot user tokens are not supported by the [`channels.setTopic`](https://api.slack.com/methods/channels.setTopic) endpoint, so they can't be used here - you must use a user token).
+Once you've added the scopes, follow the instructions under _Settings: Install App_. You should be provided with an _OAuth Access Token_, which is what you'll need to send through to this module. Bot user tokens are not supported by the [`channels.setTopic`](https://api.slack.com/methods/channels.setTopic) endpoint, so they can't be used here - you must use a user token instead.
 
 ## Running Tests
 
@@ -66,6 +68,8 @@ or
 ## Problems?
 
 Please feel free to [log an issue](https://github.com/tdmalone/slack-topic-updater/issues/new), or - if you can solve a problem yourself - pull requests will be gladly accepted. If you add new functionality, please add tests to cover it.
+
+If you are receiving errors from the Slack API, depending on the error ensure you have set up the correct scopes (documented under *Authorisation* above); provided the correct token; and are in the channel you are trying to update. API errors that indicate something is amiss here can include `missing_scope`, `invalid_auth`, `not_in_channel`, and `channel_not_found`.
 
 ## License
 
