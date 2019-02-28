@@ -91,7 +91,7 @@ const update = ( options, client ) => {
   const slack = client ? client : new slackClient.WebClient( options.token );
 
   // Multiple channels?
-  if ( options.channels && options.channels.length ) {
+  if ( options.channels && Array.isArray( options.channels ) && options.channels.length ) {
 
     const responses = [];
 
@@ -106,11 +106,13 @@ const update = ( options, client ) => {
   }
 
   // Single channel?
-  if ( options.channel ) {
+  if ( options.channel && 'string' === typeof options.channel ) {
     return updateSingleChannel( options, slack );
   }
 
-  throw new Error( 'Either \'channel\' or \'channels\' must be provided.' );
+  throw new Error(
+    'Either \'channel\' (string) or \'channels\' (array of strings) must be provided.'
+  );
 
 }; // Update.
 

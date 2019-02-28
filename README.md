@@ -63,10 +63,6 @@ or
 
     yarn test
 
-## TODO
-
-* Better errors if multiple channels (or really, a non-string) are provided in the 'channel' attribute
-
 ## Problems?
 
 Please feel free to [log an issue](https://github.com/tdmalone/slack-topic-updater/issues/new), or - if you can solve a problem yourself - pull requests will be gladly accepted. If you add new functionality, please add tests to cover it.

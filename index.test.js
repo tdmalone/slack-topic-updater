@@ -204,6 +204,30 @@ describe( 'update()', () => {
 
   });
 
+  it( 'throws if \'channel\' is not provided as a string', () => {
+
+    expect( () => {
+      index.update({
+        token: singleChannelOptions.token,
+        topic: singleChannelOptions.topic,
+        channel: [ 'C12345678' ]
+      });
+    }).toThrow();
+
+  });
+
+  it( 'throws if \'channels\' is not provided as an array', () => {
+
+    expect( () => {
+      index.update({
+        token: singleChannelOptions.token,
+        topic: singleChannelOptions.topic,
+        channels: 'C12345678'
+      });
+    }).toThrow();
+
+  });
+
   it( 'calls channels.setTopic() with correct options for each \'channels\'', async() => {
     expect.hasAssertions();
     await index.update( multiChannelOptions, mockSlackClient );
