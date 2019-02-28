@@ -116,8 +116,9 @@ describe( 'updateSingleChannel()', () => {
     }
   });
 
-  it.skip( 'returns a promise', async() => {
-    expect.hasAssertions();
+  it( 'returns a promise', async() => {
+    expect( index.updateSingleChannel( singleChannelOptions, mockSlackClient ) )
+      .toBeInstanceOf( Promise );
   });
 
 }); // UpdateSingleChannel().
@@ -244,16 +245,63 @@ describe( 'update()', () => {
     }
   });
 
-  it.skip( 'calls updateSingleChannel() once if a single \'channel\' is provided', async() => {
+  it( 'calls Slack endpoints with correct options if a single \'channel\' is provided', async() => {
     expect.hasAssertions();
+    await index.update( singleChannelOptions, mockSlackClient );
+
+    const setTopicOptions = {
+            channel: singleChannelOptions.channel,
+            topic: singleChannelOptions.topic
+          },
+          historyOptions = {
+            channel: singleChannelOptions.channel
+          };
+
+    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledTimes( 1 );
+    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledWith( setTopicOptions );
+
+    expect( mockSlackClient.channels.history ).toHaveBeenCalledTimes( 1 );
+    expect( mockSlackClient.channels.history ).toHaveBeenCalledWith( historyOptions );
+
+    expect( mockSlackClient.chat.delete )
+      .toHaveBeenCalledTimes( sampleMessagesWithChannelTopic.length );
+
+    for ( let iterator = 0; iterator < sampleMessagesWithChannelTopic.length; iterator++ ) {
+
+      const deleteOptions = {
+        channel: singleChannelOptions.channel,
+        ts: sampleMessagesWithChannelTopic[iterator].ts
+      };
+
+      expect( mockSlackClient.chat.delete ).toHaveBeenCalledWith( deleteOptions );
+
+    }
+
   });
 
-  it.skip( 'uses \'channels\' rather than \'channel\' if both are provided', async() => {
+  it( 'uses \'channels\' rather than \'channel\' if both are provided', async() => {
     expect.hasAssertions();
+
+    const providedOptions = {
+      channel: 'C12345678',
+      channels: [ 'C87654321' ],
+      token: singleChannelOptions.token,
+      topic: singleChannelOptions.topic
+    };
+
+    const expectedOptions = {
+      channel: providedOptions.channels[0],
+      topic: providedOptions.topic
+    };
+
+    await index.update( providedOptions, mockSlackClient );
+
+    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledWith( expectedOptions );
+
   });
 
-  it.skip( 'returns a promise', async() => {
-    expect.hasAssertions();
+  it( 'returns a promise', async() => {
+    expect( index.update( multiChannelOptions, mockSlackClient ) ).toBeInstanceOf( Promise );
   });
 
 }); // Update().

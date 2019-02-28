@@ -65,7 +65,6 @@ or
 
 ## TODO
 
-* Complete in-progress (skipped) tests
 * Better errors if multiple channels (or really, a non-string) are provided in the 'channel' attribute
 
 ## Problems?
