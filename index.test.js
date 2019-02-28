@@ -20,15 +20,18 @@ const sampleMessages = [
   },
   {
     ts: 2,
-    text: 'First (latest) message with channel_topic subtype',
+    text: 'First message with channel_topic subtype',
     subtype: 'channel_topic'
   },
   {
     ts: 3,
-    text: 'Second (older) message with channel_topic subtype',
+    text: 'Second message with channel_topic subtype',
     subtype: 'channel_topic'
   }
 ];
+
+const sampleMessageWithNoSubtype = sampleMessages[0];
+const sampleMessageWithAltSubtype = sampleMessages[1];
 
 const sampleMessagesWithChannelTopic = [
   sampleMessages[2],
@@ -92,13 +95,30 @@ describe( 'updateSingleChannel()', () => {
     expect( mockSlackClient.channels.history ).toHaveBeenCalledWith( expectedOptions );
   });
 
-  it( 'deletes all topic update messages', async() => {
+  it( 'does not delete a message without a \'subtype\'', async() => {
     expect.hasAssertions();
 
-    // Providing the content of sampleMessages allows, this test also implicitly tests:
-    // - does not delete a non-channel topic 'subtyped' message
-    // - does not delete messages without a subtype
+    await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
 
+    expect( mockSlackClient.chat.delete ).toHaveBeenCalled();
+    expect( mockSlackClient.chat.delete ).not
+      .toHaveBeenCalledWith( expect.objectContaining({ ts: sampleMessageWithNoSubtype.ts }) );
+
+  });
+
+  it( 'does not delete a non-channel topic \'subtyped\'', async() => {
+    expect.hasAssertions();
+
+    await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
+
+    expect( mockSlackClient.chat.delete ).toHaveBeenCalled();
+    expect( mockSlackClient.chat.delete ).not
+      .toHaveBeenCalledWith( expect.objectContaining({ ts: sampleMessageWithAltSubtype.ts }) );
+
+  });
+
+  it( 'deletes all topic update messages', async() => {
+    expect.hasAssertions();
     await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
 
     expect( mockSlackClient.chat.delete )
