@@ -55,12 +55,7 @@ const sampleMessagesWithGroupTopic = [
 
 const mockSlackClient = {
 
-  channels: {
-    setTopic: jest.fn().mockResolvedValue(),
-    history: jest.fn().mockResolvedValue({ messages: sampleMessages })
-  },
-
-  groups: {
+  conversations: {
     setTopic: jest.fn().mockResolvedValue(),
     history: jest.fn().mockResolvedValue({ messages: sampleMessages })
   },
@@ -114,8 +109,8 @@ describe( 'updateSingleChannel()', () => {
 
     await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
 
-    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledTimes( 1 );
-    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledWith( expectedOptions );
+    expect( mockSlackClient.conversations.setTopic ).toHaveBeenCalledTimes( 1 );
+    expect( mockSlackClient.conversations.setTopic ).toHaveBeenCalledWith( expectedOptions );
   });
 
   it( 'retrieves the latest channel history', async() => {
@@ -127,22 +122,8 @@ describe( 'updateSingleChannel()', () => {
 
     await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
 
-    expect( mockSlackClient.channels.history ).toHaveBeenCalledTimes( 1 );
-    expect( mockSlackClient.channels.history ).toHaveBeenCalledWith( expectedOptions );
-  });
-
-  it( 'calls private channel endpoints instead, if supplied with a private channel ID', async() => {
-    expect.hasAssertions();
-
-    const options = Object.assign({}, singleChannelOptions );
-    options.channel = 'G12345678';
-
-    await index.updateSingleChannel( options, mockSlackClient );
-
-    expect( mockSlackClient.groups.setTopic ).toHaveBeenCalled();
-    expect( mockSlackClient.groups.history ).toHaveBeenCalled();
-    expect( mockSlackClient.channels.setTopic ).not.toHaveBeenCalled();
-    expect( mockSlackClient.channels.history ).not.toHaveBeenCalled();
+    expect( mockSlackClient.conversations.history ).toHaveBeenCalledTimes( 1 );
+    expect( mockSlackClient.conversations.history ).toHaveBeenCalledWith( expectedOptions );
   });
 
   it( 'does not delete a message without a \'subtype\'', async() => {
@@ -301,11 +282,11 @@ describe( 'update()', () => {
 
   });
 
-  it( 'calls channels.setTopic() with correct options for each \'channels\'', async() => {
+  it( 'calls conversations.setTopic() with correct options for each \'channels\'', async() => {
     expect.hasAssertions();
     await index.update( multiChannelOptions, mockSlackClient );
 
-    expect( mockSlackClient.channels.setTopic )
+    expect( mockSlackClient.conversations.setTopic )
       .toHaveBeenCalledTimes( multiChannelOptions.channels.length );
 
     for ( let iterator = 0; iterator < multiChannelOptions.channels.length; iterator++ ) {
@@ -315,17 +296,17 @@ describe( 'update()', () => {
         topic: multiChannelOptions.topic
       };
 
-      expect( mockSlackClient.channels.setTopic )
+      expect( mockSlackClient.conversations.setTopic )
         .toHaveBeenNthCalledWith( iterator + 1, singleOptions );
 
     }
   });
 
-  it( 'calls channels.history() with correct options for each \'channels\'', async() => {
+  it( 'calls conversations.history() with correct options for each \'channels\'', async() => {
     expect.hasAssertions();
     await index.update( multiChannelOptions, mockSlackClient );
 
-    expect( mockSlackClient.channels.history )
+    expect( mockSlackClient.conversations.history )
       .toHaveBeenCalledTimes( multiChannelOptions.channels.length );
 
     for ( let iterator = 0; iterator < multiChannelOptions.channels.length; iterator++ ) {
@@ -334,7 +315,7 @@ describe( 'update()', () => {
         channel: multiChannelOptions.channels[iterator]
       };
 
-      expect( mockSlackClient.channels.history )
+      expect( mockSlackClient.conversations.history )
         .toHaveBeenNthCalledWith( iterator + 1, singleOptions );
 
     }
@@ -374,11 +355,11 @@ describe( 'update()', () => {
             channel: singleChannelOptions.channel
           };
 
-    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledTimes( 1 );
-    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledWith( setTopicOptions );
+    expect( mockSlackClient.conversations.setTopic ).toHaveBeenCalledTimes( 1 );
+    expect( mockSlackClient.conversations.setTopic ).toHaveBeenCalledWith( setTopicOptions );
 
-    expect( mockSlackClient.channels.history ).toHaveBeenCalledTimes( 1 );
-    expect( mockSlackClient.channels.history ).toHaveBeenCalledWith( historyOptions );
+    expect( mockSlackClient.conversations.history ).toHaveBeenCalledTimes( 1 );
+    expect( mockSlackClient.conversations.history ).toHaveBeenCalledWith( historyOptions );
 
     expect( mockSlackClient.chat.delete )
       .toHaveBeenCalledTimes( sampleMessagesWithChannelTopic.length );
@@ -413,7 +394,7 @@ describe( 'update()', () => {
 
     await index.update( providedOptions, mockSlackClient );
 
-    expect( mockSlackClient.channels.setTopic ).toHaveBeenCalledWith( expectedOptions );
+    expect( mockSlackClient.conversations.setTopic ).toHaveBeenCalledWith( expectedOptions );
 
   });
 

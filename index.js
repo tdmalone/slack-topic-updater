@@ -41,8 +41,8 @@ const updateSingleChannel = ( options, slack ) => {
   const topic = options.topic,
         channel = options.channel;
 
-  const setTopicEndpoint = isPrivate( channel ) ? slack.groups.setTopic : slack.channels.setTopic,
-        historyEndpoint = isPrivate( channel ) ? slack.groups.history : slack.channels.history,
+  const setTopicEndpoint = slack.conversations.setTopic,
+        historyEndpoint = slack.conversations.history,
         requiredMessageSubtype = isPrivate( channel ) ? 'group_topic' : 'channel_topic';
 
   // Set the topic.
