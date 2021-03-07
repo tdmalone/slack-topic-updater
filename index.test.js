@@ -117,7 +117,8 @@ describe( 'updateSingleChannel()', () => {
     expect.hasAssertions();
 
     const expectedOptions = {
-      channel: singleChannelOptions.channel
+      channel: singleChannelOptions.channel,
+      limit: 200
     };
 
     await index.updateSingleChannel( singleChannelOptions, mockSlackClient );
@@ -312,7 +313,8 @@ describe( 'update()', () => {
     for ( let iterator = 0; iterator < multiChannelOptions.channels.length; iterator++ ) {
 
       const singleOptions = {
-        channel: multiChannelOptions.channels[iterator]
+        channel: multiChannelOptions.channels[iterator],
+        limit: 200
       };
 
       expect( mockSlackClient.conversations.history )
@@ -352,7 +354,8 @@ describe( 'update()', () => {
             topic: singleChannelOptions.topic
           },
           historyOptions = {
-            channel: singleChannelOptions.channel
+            channel: singleChannelOptions.channel,
+            limit: 200
           };
 
     expect( mockSlackClient.conversations.setTopic ).toHaveBeenCalledTimes( 1 );
