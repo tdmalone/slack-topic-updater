@@ -52,8 +52,13 @@ const updateSingleChannel = ( options, slack ) => {
   });
 
   // Get the recent message history.
+  // Slack recommends 'no more than 200 results at a time'
+  // (https://api.slack.com/methods/conversations.history#pagination)
   const getHistory = setTopic.then( () => {
-    return historyEndpoint({ channel });
+    return historyEndpoint({
+      channel,
+      limit: 200
+    });
   });
 
   // Delete the latest topic update message.
